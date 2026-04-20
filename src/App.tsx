@@ -1,19 +1,31 @@
 import { useState } from 'react'
 import Stepper from './components/Stepper'
+import Onboarding, { resetOnboarding } from './components/Onboarding'
 import SettingsPage from './pages/SettingsPage'
 import UploadPage from './pages/UploadPage'
 import ResultsPage from './pages/ResultsPage'
+import type { OcrResult } from './lib/runOcr'
+import type { ParsedUpload } from './lib/upload'
 
 type Step = 1 | 2 | 3
 
 function App() {
   const [step, setStep] = useState<Step>(1)
+  const [parsed, setParsed] = useState<ParsedUpload | null>(null)
+  const [results, setResults] = useState<OcrResult[]>([])
+  const [tourKey, setTourKey] = useState(0)
+
+  const replayTour = () => {
+    resetOnboarding()
+    setTourKey((k) => k + 1)
+  }
 
   const goPrev = () => setStep((s) => (s > 1 ? ((s - 1) as Step) : s))
   const goNext = () => setStep((s) => (s < 3 ? ((s + 1) as Step) : s))
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <Onboarding key={tourKey} />
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
@@ -25,14 +37,15 @@ function App() {
               <p className="text-xs text-slate-500">廠商請款自動彙整</p>
             </div>
           </div>
-          <a
-            href="https://github.com/airrick1985/billing-bot"
-            target="_blank"
-            rel="noreferrer"
-            className="text-sm text-slate-500 hover:text-slate-900"
-          >
-            GitHub ↗
-          </a>
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={replayTour}
+              className="text-sm text-slate-500 hover:text-slate-900"
+            >
+              教學
+            </button>
+          </div>
         </div>
       </header>
 
@@ -41,8 +54,10 @@ function App() {
 
         <div className="mt-8">
           {step === 1 && <SettingsPage />}
-          {step === 2 && <UploadPage />}
-          {step === 3 && <ResultsPage />}
+          {step === 2 && <UploadPage parsed={parsed} setParsed={setParsed} />}
+          {step === 3 && (
+            <ResultsPage parsed={parsed} results={results} setResults={setResults} />
+          )}
         </div>
 
         <div className="mt-6 flex items-center justify-between">
