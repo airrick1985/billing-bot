@@ -1,9 +1,8 @@
-type Step = 1 | 2 | 3
+type Step = 1 | 2
 
 const STEPS: { id: Step; label: string; hint: string }[] = [
-  { id: 1, label: '設定', hint: 'API Key 與 SPEC' },
-  { id: 2, label: '上傳', hint: '選擇廠商資料夾' },
-  { id: 3, label: '彙整', hint: '檢視與匯出 Excel' },
+  { id: 1, label: '建立請款', hint: '選月份、廠商與照片' },
+  { id: 2, label: '彙整寫入', hint: '辨識、校對、寫入 Sheet' },
 ]
 
 type Props = {

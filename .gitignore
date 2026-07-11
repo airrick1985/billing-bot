@@ -23,3 +23,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# local env
+.env
+.env.local
+.env.*.local
+
+# 吉祥物原始大圖(app 使用 src/assets 與 public 的縮圖版)
+/bot-photo.png

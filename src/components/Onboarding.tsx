@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import botPhoto from '../assets/bot-photo.png'
 
 const STORAGE_KEY = 'billing-bot:onboarded:v1'
 
@@ -11,61 +12,49 @@ type TourStep = {
 const STEPS: TourStep[] = [
   {
     emoji: '👋',
-    title: '歡迎使用 Billing Bot',
+    title: '歡迎使用 廠商請款助理',
     body: (
       <>
-        把廠商請款的 <b>發票 + 報價單照片</b> 丟進來,AI 幫你辨識並產出 Excel 總表。
-        整個流程只需 <b>3 個步驟</b>,第一次大約 2 分鐘熟悉。
-      </>
-    ),
-  },
-  {
-    emoji: '🔑',
-    title: '① 設定:API Key 與 SPEC',
-    body: (
-      <>
-        首先選一家 AI 供應商(Google / OpenAI / Anthropic / OpenRouter),貼上 API Key 並選擇模型。
-        <br />
-        <span className="text-slate-500">
-          Key 只存在你的瀏覽器(localStorage),不會上傳到任何伺服器。
-        </span>
+        <img
+          src={botPhoto}
+          alt="請款機器人"
+          className="mx-auto mb-3 h-32 w-32 rounded-full shadow-md ring-2 ring-indigo-100"
+        />
+        把廠商請款的<b>發票、請款單、介紹費申請單照片</b>丟進來,AI
+        幫你辨識、校對,直接寫入建案的 Google Sheet 並自動歸檔照片。
+        流程只有 <b>2 個步驟</b>,第一次大約 2 分鐘熟悉。
       </>
     ),
   },
   {
     emoji: '📁',
-    title: '② 上傳:廠商資料夾',
+    title: '① 建立請款批次',
     body: (
       <>
-        拖曳或選擇一個<b>請款月份資料夾</b>,結構如下:
-        <pre className="mt-2 rounded-md bg-slate-900 px-3 py-2 text-[11px] leading-5 text-slate-100">
-{`2026年4月/
-├── 安熙智慧有限公司/
-│   ├── 發票.jpg
-│   └── 報價單.jpg
-└── 其他廠商/ ...`}
-        </pre>
-        每個子資料夾 = Excel 一列。
+        先在右上角<b>切換建案</b>,選擇<b>請款月份</b>,然後從該建案總表的
+        <b>歷史廠商</b>挑選(可搜尋)或新增廠商,再為每個廠商上傳本月的請款照片
+        (種類判錯可手動改)。備妥後按右下角「下一步」。
       </>
     ),
   },
   {
     emoji: '✨',
-    title: '③ 辨識、檢視、匯出',
+    title: '② 辨識、校對、寫入',
     body: (
       <>
         點「開始辨識」後會並行跑 OCR,結果可<b>直接在畫面上編輯</b>。
-        異常欄位(金額對不上、重複發票號等)會以紅底提示,修好就按「匯出 Excel」下載 .xlsx。
+        異常欄位(金額對不上、重複發票號等)會以紅底提示,修好按「寫入 Google
+        Sheet」即存入總表與月份分頁(自動跨月查重),照片同時歸檔到雲端硬碟。
       </>
     ),
   },
   {
-    emoji: '🔒',
-    title: '隱私與資料',
+    emoji: '🛠️',
+    title: '管理者專區',
     body: (
       <>
-        除了辨識當下會把照片傳給你選的 AI 供應商外,<b>所有資料都留在你的瀏覽器</b>。
-        不登入、不上傳伺服器、不追蹤。關掉分頁 = 資料仍在 localStorage,換電腦就要重設。
+        <b>建案清單、Google Sheet、使用者白名單、AI 模型與 SPEC Prompt</b>
+        都集中在右上角「管理後台」,由管理者維護;一般使用者登入即用,不需任何設定。
         <br />
         <span className="mt-2 block text-slate-500">準備好了嗎?按「開始使用」進入第一步。</span>
       </>
@@ -74,15 +63,23 @@ const STEPS: TourStep[] = [
 ]
 
 export default function Onboarding() {
-  const [open, setOpen] = useState(false)
+  // 以 key 重掛載重播教學,所以初始值用 lazy initializer 讀 localStorage 即可
+  const [open, setOpen] = useState(() => {
+    try {
+      return localStorage.getItem(STORAGE_KEY) !== 'true'
+    } catch {
+      return false
+    }
+  })
   const [index, setIndex] = useState(0)
 
-  useEffect(() => {
+  const finish = useCallback(() => {
     try {
-      if (localStorage.getItem(STORAGE_KEY) !== 'true') setOpen(true)
+      localStorage.setItem(STORAGE_KEY, 'true')
     } catch {
-      // ignore storage errors
+      // ignore
     }
+    setOpen(false)
   }, [])
 
   useEffect(() => {
@@ -94,16 +91,7 @@ export default function Onboarding() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [open])
-
-  const finish = () => {
-    try {
-      localStorage.setItem(STORAGE_KEY, 'true')
-    } catch {
-      // ignore
-    }
-    setOpen(false)
-  }
+  }, [open, finish])
 
   if (!open) return null
 
@@ -194,6 +182,7 @@ export default function Onboarding() {
   )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- 與教學元件同檔最直觀,HMR 影響可接受
 export function resetOnboarding(): void {
   try {
     localStorage.removeItem(STORAGE_KEY)

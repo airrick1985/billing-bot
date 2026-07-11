@@ -1,4 +1,4 @@
-export type FileKind = 'invoice' | 'quote' | 'unknown'
+export type FileKind = 'invoice' | 'quote' | 'referral' | 'unknown'
 
 export type VendorFile = {
   name: string
@@ -8,6 +8,13 @@ export type VendorFile = {
   kind: FileKind
 }
 
+/** 從建案總表撈到的歷史廠商資訊,用於預填與比對 */
+export type KnownVendorInfo = {
+  taxId: string
+  contact: string
+  phone: string
+}
+
 export type VendorGroup = {
   folderName: string
   displayName: string
@@ -15,6 +22,8 @@ export type VendorGroup = {
   files: VendorFile[]
   hasInvoice: boolean
   hasQuote: boolean
+  hasReferral: boolean
+  known?: KnownVendorInfo
 }
 
 export type BillingPeriod = {
@@ -33,11 +42,27 @@ export type ParsedUpload = {
 
 const ACCEPTED_EXT = /\.(jpe?g|png|webp|heic|heif|pdf)$/i
 
-function classifyFile(filename: string): FileKind {
+export function classifyFile(filename: string): FileKind {
   const base = filename.replace(/\.[^.]+$/, '')
+  if (/介紹費/.test(base)) return 'referral'
   if (/發票/.test(base)) return 'invoice'
-  if (/報價單|請款單|估價單/.test(base)) return 'quote'
+  if (/報價單|請款單|估價單|申請單/.test(base)) return 'quote'
   return 'unknown'
+}
+
+export const ACCEPTED_UPLOAD_EXT = ACCEPTED_EXT
+
+/** 依檔案種類重算 VendorGroup 的 has* 旗標 */
+export function computeKindFlags(files: VendorFile[]): {
+  hasInvoice: boolean
+  hasQuote: boolean
+  hasReferral: boolean
+} {
+  return {
+    hasInvoice: files.some((f) => f.kind === 'invoice'),
+    hasQuote: files.some((f) => f.kind === 'quote'),
+    hasReferral: files.some((f) => f.kind === 'referral'),
+  }
 }
 
 export function parsePeriod(folderName: string): BillingPeriod {
@@ -106,6 +131,7 @@ export function parseFileList(files: File[]): ParsedUpload {
       files: parsed,
       hasInvoice: parsed.some((f) => f.kind === 'invoice'),
       hasQuote: parsed.some((f) => f.kind === 'quote'),
+      hasReferral: parsed.some((f) => f.kind === 'referral'),
     })
   }
 
