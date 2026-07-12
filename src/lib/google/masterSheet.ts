@@ -21,7 +21,8 @@ export const USERS_TAB = '使用者'
 export const CONFIG_TAB = '設定'
 
 const PROJECT_HEADERS = ['建案名稱', '試算表ID', 'Drive資料夾ID', '狀態', '備註']
-const USER_HEADERS = ['Email', '角色', '備註']
+// 「可用建案」附加在最後,舊主檔(只有 3 欄)讀取時視為未限制
+const USER_HEADERS = ['Email', '角色', '備註', '可用建案']
 const CONFIG_HEADERS = ['項目', '值']
 
 export type Project = {
@@ -38,6 +39,8 @@ export type AppUser = {
   email: string
   role: Role
   note: string
+  /** 可用建案名稱清單;空陣列 = 不限制(全部建案) */
+  projects: string[]
 }
 
 /** 全域 OCR 設定(admin 維護,所有使用者共用) */
@@ -53,16 +56,23 @@ export type MasterData = {
   ocrConfig: OcrConfig | null
 }
 
+/** 環境變數提供的主檔 ID(部署時全站預設) */
+export function getEnvMasterSheetId(): string {
+  return ((import.meta.env.VITE_MASTER_SHEET_ID as string | undefined) ?? '').trim()
+}
+
+/** 生效的主檔 ID:此裝置的明確設定(localStorage)優先,其次環境變數 */
 export function getMasterSheetId(): string {
-  return (
-    (import.meta.env.VITE_MASTER_SHEET_ID as string | undefined)?.trim() ||
-    localStorage.getItem(MASTER_ID_KEY)?.trim() ||
-    ''
-  )
+  return localStorage.getItem(MASTER_ID_KEY)?.trim() || getEnvMasterSheetId()
 }
 
 export function saveMasterSheetId(id: string): void {
   localStorage.setItem(MASTER_ID_KEY, id.trim())
+}
+
+/** 清除此裝置的覆寫,回到環境變數設定 */
+export function clearMasterSheetIdOverride(): void {
+  localStorage.removeItem(MASTER_ID_KEY)
 }
 
 /** 建立全新的系統主檔,並把目前使用者設成第一位 admin */
@@ -74,7 +84,7 @@ export async function createMasterSheet(adminEmail: string): Promise<string> {
   await setValues(spreadsheetId, `${PROJECTS_TAB}!A1`, [PROJECT_HEADERS])
   await setValues(spreadsheetId, `${USERS_TAB}!A1`, [
     USER_HEADERS,
-    [adminEmail, 'admin', '系統建立者'],
+    [adminEmail, 'admin', '系統建立者', ''],
   ])
   return spreadsheetId
 }
@@ -86,7 +96,7 @@ function toStr(v: CellValue | undefined): string {
 export async function loadMasterData(masterId: string): Promise<MasterData> {
   const [projectRows, userRows, configRows] = await Promise.all([
     getValues(masterId, `${PROJECTS_TAB}!A2:E`),
-    getValues(masterId, `${USERS_TAB}!A2:C`),
+    getValues(masterId, `${USERS_TAB}!A2:D`),
     // 舊版主檔沒有「設定」分頁,讀不到就當沒設定
     getValues(masterId, `${CONFIG_TAB}!A2:B`).catch(() => [] as CellValue[][]),
   ])
@@ -107,6 +117,10 @@ export async function loadMasterData(masterId: string): Promise<MasterData> {
       email: toStr(r[0]).toLowerCase(),
       role: toStr(r[1]) === 'admin' ? 'admin' : 'user',
       note: toStr(r[2]),
+      projects: toStr(r[3])
+        .split(/[、,;\s]+/)
+        .map((s) => s.trim())
+        .filter(Boolean),
     }))
 
   const kv = new Map<string, string>()
@@ -154,13 +168,14 @@ export async function saveProjects(masterId: string, projects: Project[]): Promi
   )
 }
 
-/** 全量覆寫使用者分頁 */
+/** 全量覆寫使用者分頁(同時更新表頭,讓舊主檔補上「可用建案」欄) */
 export async function saveUsers(masterId: string, users: AppUser[]): Promise<void> {
-  await clearValues(masterId, `${USERS_TAB}!A2:C`)
+  await setValues(masterId, `${USERS_TAB}!A1`, [USER_HEADERS])
+  await clearValues(masterId, `${USERS_TAB}!A2:D`)
   if (users.length === 0) return
   await appendValues(
     masterId,
     `${USERS_TAB}!A1`,
-    users.map((u) => [u.email, u.role, u.note]),
+    users.map((u) => [u.email, u.role, u.note, u.projects.join('、')]),
   )
 }

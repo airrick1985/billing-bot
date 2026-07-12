@@ -14,7 +14,9 @@ import {
   type GoogleUser,
 } from '../lib/google/auth'
 import {
+  clearMasterSheetIdOverride,
   createMasterSheet,
+  getEnvMasterSheetId,
   getMasterSheetId,
   loadMasterData,
   saveMasterSheetId,
@@ -56,6 +58,8 @@ type AuthContextValue = {
   updateProjectDriveFolder: (projectName: string, folderId: string) => Promise<void>
   ocrConfig: OcrConfig | null
   saveGlobalOcrConfig: (config: OcrConfig) => Promise<void>
+  switchMasterSheet: (idOrUrl: string) => Promise<void>
+  resetMasterToEnv: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -153,6 +157,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await loadMasterFor(user, masterId)
   }, [user, loadMasterFor])
 
+  /**
+   * 切換系統主檔:先完整驗證(讀得到、有建案/使用者分頁、目前帳號在白名單)
+   * 才提交,失敗時丟錯誤且維持原主檔不變。
+   */
+  const switchMasterSheet = useCallback(
+    async (idOrUrl: string) => {
+      if (!user) throw new Error('尚未登入')
+      const id = parseSpreadsheetId(idOrUrl)
+      if (!id) throw new Error('請輸入試算表網址或 ID')
+      const data = await loadMasterData(id)
+      const me = data.users.find((x) => x.email === user.email)
+      if (!me) {
+        throw new Error(
+          `你的帳號(${user.email})不在該主檔的使用者白名單,切換後會被鎖在系統外,已取消`,
+        )
+      }
+      saveMasterSheetId(id)
+      setMasterSheetId(id)
+      setMaster(data)
+      setStatus('ready')
+    },
+    [user],
+  )
+
+  /** 清除此裝置的主檔覆寫,回到環境變數設定 */
+  const resetMasterToEnv = useCallback(async () => {
+    clearMasterSheetIdOverride()
+    const envId = getEnvMasterSheetId()
+    setMasterSheetId(envId)
+    if (user && envId) {
+      await loadMasterFor(user, envId)
+    } else if (!envId) {
+      setMaster(null)
+      setStatus('need-master')
+    }
+  }, [user, loadMasterFor])
+
   /** admin 儲存全域 OCR 設定(provider/model/specPrompt) */
   const saveGlobalOcrConfig = useCallback(
     async (config: OcrConfig) => {
@@ -178,10 +219,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [master],
   )
 
-  const projects = useMemo(
-    () => (master?.projects ?? []).filter((p) => p.active),
-    [master],
-  )
+  const projects = useMemo(() => {
+    const active = (master?.projects ?? []).filter((p) => p.active)
+    const me = master?.users.find((x) => x.email === user?.email)
+    // admin 或未設定限制 → 全部建案;否則只顯示被授權的建案
+    if (!me || me.role === 'admin' || me.projects.length === 0) return active
+    const allowed = new Set(me.projects)
+    return active.filter((p) => allowed.has(p.name))
+  }, [master, user])
 
   const activeProject = useMemo(() => {
     if (projects.length === 0) return null
@@ -215,6 +260,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     updateProjectDriveFolder,
     ocrConfig: master?.ocrConfig ?? null,
     saveGlobalOcrConfig,
+    switchMasterSheet,
+    resetMasterToEnv,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
