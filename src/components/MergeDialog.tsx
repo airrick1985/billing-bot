@@ -17,27 +17,27 @@ export default function MergeDialog({ plan, onConfirm, onCancel }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onCancel} />
-      <div className="relative w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
+      <div className="absolute inset-0 bg-black/50" onClick={onCancel} />
+      <div className="nb-card relative w-full max-w-lg p-6 shadow-[8px_8px_0_0_#111]">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h3 className="text-base font-semibold text-slate-900">附加到既有 Excel</h3>
-            <p className="mt-1 text-xs text-slate-500 break-all">目標檔:{plan.filename}</p>
+            <h3 className="text-base font-extrabold">附加到既有 Excel</h3>
+            <p className="mt-1 text-xs text-neutral-500 break-all">目標檔:{plan.filename}</p>
           </div>
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            className="nb-btn h-8 w-8 shrink-0 p-0 text-sm"
           >
             ✕
           </button>
         </div>
 
-        <div className="mt-4 rounded-lg bg-slate-50 p-3 text-xs text-slate-600">
-          即將寫入 <b>{plan.newRows.length}</b> 列到 <code className="mx-1 rounded bg-white px-1">總表</code>
+        <div className="nb-frame mt-4 bg-[var(--nb-bg)] p-3 text-xs text-neutral-700">
+          即將寫入 <b>{plan.newRows.length}</b> 列到 <code className="nb-frame mx-1 bg-white px-1">總表</code>
           {plan.monthSheetName && (
             <>
-              與 <code className="mx-1 rounded bg-white px-1">{plan.monthSheetName}</code>
+              與 <code className="nb-frame mx-1 bg-white px-1">{plan.monthSheetName}</code>
             </>
           )}
           。
@@ -45,11 +45,11 @@ export default function MergeDialog({ plan, onConfirm, onCancel }: Props) {
 
         {needsMonthDecision && (
           <section className="mt-5">
-            <h4 className="text-sm font-semibold text-slate-800">
+            <h4 className="text-sm font-extrabold">
               ⚠ 月份 sheet 已存在
             </h4>
-            <p className="mt-1 text-xs text-slate-500">
-              <code className="rounded bg-slate-100 px-1">{plan.monthSheetName}</code>
+            <p className="mt-1 text-xs text-neutral-500">
+              <code className="nb-frame bg-[var(--nb-bg)] px-1">{plan.monthSheetName}</code>
               {' '}原本已有 {plan.existingMonthRowCount} 列。要如何處理?
             </p>
             <div className="mt-2 space-y-2">
@@ -76,14 +76,14 @@ export default function MergeDialog({ plan, onConfirm, onCancel }: Props) {
 
         {hasDuplicates && (
           <section className="mt-5">
-            <h4 className="text-sm font-semibold text-slate-800">
+            <h4 className="text-sm font-extrabold">
               ⚠ 發票號碼在總表已存在({plan.duplicates.length} 筆)
             </h4>
-            <ul className="mt-2 max-h-32 space-y-1 overflow-y-auto rounded border border-slate-200 bg-slate-50 p-2 text-xs">
+            <ul className="nb-frame mt-2 max-h-32 space-y-1 overflow-y-auto bg-[var(--nb-bg)] p-2 text-xs">
               {plan.duplicates.map((d) => (
                 <li key={d.invoiceNo} className="flex items-center justify-between gap-2">
-                  <code className="rounded bg-white px-1 font-mono">{d.invoiceNo}</code>
-                  <span className="truncate text-slate-500">
+                  <code className="nb-frame bg-white px-1 font-mono">{d.invoiceNo}</code>
+                  <span className="truncate text-neutral-500">
                     新:{d.newVendor} / 舊:{d.existingVendor}
                   </span>
                 </li>
@@ -112,7 +112,7 @@ export default function MergeDialog({ plan, onConfirm, onCancel }: Props) {
         )}
 
         {nothingToDecide && (
-          <p className="mt-5 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800 ring-1 ring-emerald-200">
+          <p className="nb-frame mt-5 bg-[var(--nb-green-soft)] p-3 text-sm font-bold">
             ✓ 沒有衝突,可直接寫入。
           </p>
         )}
@@ -121,20 +121,20 @@ export default function MergeDialog({ plan, onConfirm, onCancel }: Props) {
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="nb-btn px-4 py-2 text-sm"
           >
             取消
           </button>
           <button
             type="button"
             onClick={() => onConfirm({ duplicateAction, monthAction })}
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
+            className="nb-btn nb-btn-primary px-4 py-2 text-sm"
           >
             確認並下載
           </button>
         </div>
 
-        <p className="mt-3 text-[11px] leading-snug text-slate-400">
+        <p className="mt-3 text-[11px] leading-snug text-neutral-500">
           ⓘ 瀏覽器無法直接寫回你電腦上的原檔,下載後請手動取代。檔名會維持「{plan.filename}」。
         </p>
       </div>
@@ -161,12 +161,12 @@ function ChoiceRow({
 }) {
   return (
     <label
-      className={`flex cursor-pointer items-start gap-2 rounded-lg border p-2.5 text-sm transition ${
+      className={`nb-frame flex cursor-pointer items-start gap-2 p-2.5 text-sm transition ${
         checked
           ? danger
-            ? 'border-rose-300 bg-rose-50'
-            : 'border-indigo-300 bg-indigo-50'
-          : 'border-slate-200 bg-white hover:bg-slate-50'
+            ? 'bg-[var(--nb-red-soft)] shadow-[3px_3px_0_0_#111]'
+            : 'bg-[var(--nb-blue-soft)] shadow-[3px_3px_0_0_#111]'
+          : 'bg-white hover:bg-[var(--nb-bg)]'
       }`}
     >
       <input
@@ -175,11 +175,11 @@ function ChoiceRow({
         value={value}
         checked={checked}
         onChange={onChange}
-        className="mt-1"
+        className="mt-1 accent-black"
       />
       <div>
-        <div className={`font-medium ${danger ? 'text-rose-700' : 'text-slate-800'}`}>{label}</div>
-        <div className="text-xs text-slate-500">{desc}</div>
+        <div className="font-bold">{label}</div>
+        <div className="text-xs text-neutral-600">{desc}</div>
       </div>
     </label>
   )

@@ -96,8 +96,8 @@ export default function ResultsPage({ parsed, results, setResults }: Props) {
 
   if (!parsed || parsed.vendors.length === 0) {
     return (
-      <section className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center">
-        <p className="text-slate-500">請先到 Step ① 建立請款批次。</p>
+      <section className="nb-card border-dashed p-12 text-center">
+        <p className="font-bold text-neutral-500">請先到 Step ① 建立請款批次。</p>
       </section>
     )
   }
@@ -292,13 +292,13 @@ export default function ResultsPage({ parsed, results, setResults }: Props) {
 
   return (
     <section className="space-y-4">
-      <header className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <header className="nb-card p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 className="text-xl font-semibold text-slate-900">② 彙整寫入</h2>
-            <p className="mt-1 text-sm text-slate-600">
+            <h2 className="text-xl font-extrabold">② 彙整寫入</h2>
+            <p className="mt-1 text-sm text-neutral-600">
               將把 {parsed.vendors.length} 筆廠商送去 <b>{activeMeta.displayName}</b>
-              (<code className="rounded bg-slate-100 px-1 text-xs">{ocrTarget.model || '未設定'}</code>)辨識。
+              (<code className="nb-frame bg-[var(--nb-bg)] px-1 text-xs">{ocrTarget.model || '未設定'}</code>)辨識。
               結果可直接在下方編輯。
             </p>
           </div>
@@ -309,7 +309,7 @@ export default function ResultsPage({ parsed, results, setResults }: Props) {
                   type="button"
                   onClick={() => void writeToSheet()}
                   disabled={successCount === 0 || writing || !activeProject?.sheetId}
-                  className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="nb-btn nb-btn-green px-4 py-2 text-sm"
                   title={
                     !activeProject?.sheetId
                       ? '此建案尚未設定 Google Sheet'
@@ -324,7 +324,7 @@ export default function ResultsPage({ parsed, results, setResults }: Props) {
                   type="button"
                   onClick={() => exportToExcel(parsed, results, projectName)}
                   disabled={successCount === 0}
-                  className="rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800 shadow-sm hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="nb-btn px-4 py-2 text-sm"
                   title={successCount === 0 ? '尚無成功辨識的資料' : '備援:下載 .xlsx'}
                 >
                   下載 Excel
@@ -333,7 +333,7 @@ export default function ResultsPage({ parsed, results, setResults }: Props) {
                   type="button"
                   onClick={() => mergeInputRef.current?.click()}
                   disabled={successCount === 0}
-                  className="rounded-lg border border-indigo-300 bg-white px-4 py-2 text-sm font-medium text-indigo-700 shadow-sm hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="nb-btn nb-btn-blue px-4 py-2 text-sm"
                   title={successCount === 0 ? '尚無成功辨識的資料' : '附加到既有的 .xlsx'}
                 >
                   附加到既有檔…
@@ -351,7 +351,7 @@ export default function ResultsPage({ parsed, results, setResults }: Props) {
               <button
                 type="button"
                 onClick={cancel}
-                className="rounded-lg border border-rose-300 bg-white px-4 py-2 text-sm font-medium text-rose-700 shadow-sm hover:bg-rose-50"
+                className="nb-btn nb-btn-danger px-4 py-2 text-sm"
               >
                 取消
               </button>
@@ -360,7 +360,7 @@ export default function ResultsPage({ parsed, results, setResults }: Props) {
                 type="button"
                 onClick={runAll}
                 disabled={!canRun}
-                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-40"
+                className="nb-btn nb-btn-primary px-4 py-2 text-sm"
                 title={
                   !hasKey
                     ? '請先在頁面上方輸入個人 API Key'
@@ -376,7 +376,7 @@ export default function ResultsPage({ parsed, results, setResults }: Props) {
         </div>
 
         {!hasKey && (
-          <p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-800 ring-1 ring-amber-200">
+          <p className="nb-frame mt-3 bg-[var(--nb-amber-soft)] p-3 text-sm font-medium">
             ⚠️ 尚未輸入 <b>{activeMeta.displayName}</b> 的個人 API
             Key,請展開頁面上方的「個人 API Key」欄位輸入。
           </p>
@@ -384,15 +384,15 @@ export default function ResultsPage({ parsed, results, setResults }: Props) {
 
         {running && (
           <div className="mt-4">
-            <div className="flex items-center justify-between text-xs text-slate-600">
+            <div className="flex items-center justify-between text-xs font-bold">
               <span>
                 辨識中:{progress.done} / {progress.total}
               </span>
               <span>同時 {CONCURRENCY} 筆</span>
             </div>
-            <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+            <div className="nb-frame mt-1 h-4 w-full overflow-hidden bg-white">
               <div
-                className="h-full bg-indigo-500 transition-all"
+                className="h-full bg-[var(--nb-yellow)] transition-all"
                 style={{
                   width: `${progress.total ? (progress.done / progress.total) * 100 : 0}%`,
                 }}
@@ -402,7 +402,7 @@ export default function ResultsPage({ parsed, results, setResults }: Props) {
         )}
 
         {mergeMessage && (
-          <div className="mt-3 flex items-start justify-between gap-3 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800 ring-1 ring-emerald-200">
+          <div className="nb-frame mt-3 flex items-start justify-between gap-3 bg-[var(--nb-green-soft)] p-3 text-sm font-medium">
             <span>
               ✓ {mergeMessage}
               {mergeMessage.includes('Google Sheet') && activeProject?.sheetId && (
@@ -412,7 +412,7 @@ export default function ResultsPage({ parsed, results, setResults }: Props) {
                     href={spreadsheetUrl(activeProject.sheetId)}
                     target="_blank"
                     rel="noreferrer"
-                    className="font-medium underline underline-offset-2"
+                    className="nb-link"
                   >
                     開啟試算表 ↗
                   </a>
@@ -422,19 +422,19 @@ export default function ResultsPage({ parsed, results, setResults }: Props) {
             <button
               type="button"
               onClick={() => setMergeMessage(null)}
-              className="text-emerald-600 hover:text-emerald-900"
+              className="font-bold hover:text-neutral-600"
             >
               ✕
             </button>
           </div>
         )}
         {mergeError && (
-          <div className="mt-3 flex items-start justify-between gap-3 rounded-lg bg-rose-50 p-3 text-sm text-rose-800 ring-1 ring-rose-200">
+          <div className="nb-frame mt-3 flex items-start justify-between gap-3 bg-[var(--nb-red-soft)] p-3 text-sm font-medium">
             <span>⚠ {mergeError}</span>
             <button
               type="button"
               onClick={() => setMergeError(null)}
-              className="text-rose-600 hover:text-rose-900"
+              className="font-bold hover:text-neutral-600"
             >
               ✕
             </button>
@@ -443,16 +443,16 @@ export default function ResultsPage({ parsed, results, setResults }: Props) {
 
         {results.length > 0 && !running && (
           <div className="mt-3 flex flex-wrap gap-2 text-xs">
-            <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-emerald-700 ring-1 ring-emerald-200">
+            <span className="nb-badge bg-[var(--nb-green)] px-2.5 py-1">
               ✓ 成功 {successCount}
             </span>
             {errorCount > 0 && (
-              <span className="rounded-full bg-rose-50 px-2.5 py-1 text-rose-700 ring-1 ring-rose-200">
+              <span className="nb-badge bg-[var(--nb-red)] px-2.5 py-1">
                 ✗ 失敗 {errorCount}
               </span>
             )}
             {duplicateCount > 0 && (
-              <span className="rounded-full bg-rose-50 px-2.5 py-1 text-rose-700 ring-1 ring-rose-200">
+              <span className="nb-badge bg-[var(--nb-red-soft)] px-2.5 py-1">
                 ⚠ 發票號重複 {duplicateCount}
               </span>
             )}
@@ -509,10 +509,10 @@ function VendorResultCard({
 
   if (!result) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="nb-card-sm p-4">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-semibold text-slate-900">{displayName}</span>
-          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500">待辨識</span>
+          <span className="text-sm font-bold">{displayName}</span>
+          <span className="nb-badge bg-neutral-200 px-2 py-0.5 text-xs text-neutral-600">待辨識</span>
         </div>
       </div>
     )
@@ -520,21 +520,21 @@ function VendorResultCard({
 
   if (result.status === 'error') {
     return (
-      <div className="rounded-xl border border-rose-200 bg-rose-50/40 p-4 shadow-sm">
+      <div className="nb-card-sm bg-[var(--nb-red-soft)] p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-slate-900">{displayName}</span>
-              <span className="rounded-full bg-rose-100 px-2 py-0.5 text-xs font-medium text-rose-700">
+              <span className="text-sm font-bold">{displayName}</span>
+              <span className="nb-badge bg-[var(--nb-red)] px-2 py-0.5 text-xs">
                 失敗
               </span>
             </div>
-            <p className="mt-1 break-words text-xs text-rose-700">{result.error}</p>
+            <p className="mt-1 break-words text-xs font-medium">{result.error}</p>
           </div>
           <button
             type="button"
             onClick={onRetry}
-            className="shrink-0 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+            className="nb-btn shrink-0 px-3 py-1.5 text-xs"
           >
             重試
           </button>
@@ -589,21 +589,21 @@ function SuccessCard({
   const referral = invoice.doc_type === 'referral_fee'
 
   const frameCls = hasDup
-    ? 'border-rose-300 bg-rose-50/40'
+    ? 'bg-[var(--nb-red-soft)]'
     : totalIssues > 0
-      ? 'border-amber-200 bg-amber-50/30'
-      : 'border-emerald-200 bg-emerald-50/30'
+      ? 'bg-[var(--nb-amber-soft)]'
+      : 'bg-[var(--nb-green-soft)]'
 
   const badge = hasDup ? (
-    <span className="rounded-full bg-rose-100 px-2 py-0.5 text-xs font-medium text-rose-700">
+    <span className="nb-badge bg-[var(--nb-red)] px-2 py-0.5 text-xs">
       重複發票
     </span>
   ) : totalIssues > 0 ? (
-    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+    <span className="nb-badge bg-[var(--nb-amber)] px-2 py-0.5 text-xs">
       {totalIssues} 項需檢查
     </span>
   ) : (
-    <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+    <span className="nb-badge bg-[var(--nb-green)] px-2 py-0.5 text-xs">
       通過
     </span>
   )
@@ -616,25 +616,25 @@ function SuccessCard({
   }
 
   return (
-    <div className={`rounded-xl border p-4 shadow-sm ${frameCls}`}>
+    <div className={`nb-card-sm p-4 ${frameCls}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-semibold text-slate-900">{displayName}</span>
+            <span className="text-sm font-bold">{displayName}</span>
             {referral && (
-              <span className="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-medium text-sky-700">
+              <span className="nb-badge bg-[var(--nb-blue)] px-2 py-0.5 text-xs">
                 介紹費
               </span>
             )}
             {badge}
           </div>
-          <p className="mt-0.5 text-xs text-slate-400">{vendor.folderName}</p>
+          <p className="mt-0.5 text-xs text-neutral-500">{vendor.folderName}</p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <select
             value={invoice.doc_type}
             onChange={(e) => onUpdate('doc_type', e.target.value as Invoice['doc_type'])}
-            className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600 shadow-sm"
+            className="nb-select px-2 py-1 text-xs"
             title="單據類型"
           >
             <option value="invoice">一般發票</option>
@@ -643,7 +643,7 @@ function SuccessCard({
           <button
             type="button"
             onClick={onRetry}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600 shadow-sm hover:bg-slate-50"
+            className="nb-btn px-3 py-1 text-xs"
           >
             重新辨識
           </button>
@@ -768,7 +768,7 @@ function SuccessCard({
       </div>
 
       {(missingInvoice || missingQuote) && (
-        <div className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs text-amber-800">
+        <div className="nb-frame mt-3 bg-[var(--nb-amber)] px-2.5 py-1.5 text-xs font-medium">
           ⚠️ {[missingInvoice, missingQuote].filter(Boolean).join(';')}
         </div>
       )}
@@ -795,7 +795,7 @@ function EditField({
 }) {
   return (
     <div>
-      <label className="block text-[10px] uppercase tracking-wide text-slate-500">
+      <label className="block text-[10px] font-bold uppercase tracking-wide text-neutral-600">
         {label}
       </label>
       <input
@@ -804,14 +804,12 @@ function EditField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`mt-0.5 w-full rounded border px-2 py-1 text-sm shadow-sm transition focus:outline-none focus:ring-1 ${
-          warning
-            ? 'border-rose-300 bg-rose-50 text-rose-900 focus:border-rose-400 focus:ring-rose-200'
-            : 'border-slate-200 bg-white text-slate-900 focus:border-indigo-400 focus:ring-indigo-200'
+        className={`nb-input mt-0.5 w-full px-2 py-1 text-sm ${
+          warning ? 'border-[var(--nb-red)] bg-[var(--nb-red-soft)]' : ''
         } ${mono ? 'font-mono' : ''}`}
       />
       {warning && (
-        <p className="mt-0.5 text-[10px] leading-snug text-rose-700">⚠️ {warning}</p>
+        <p className="mt-0.5 text-[10px] font-bold leading-snug text-red-700">⚠️ {warning}</p>
       )}
     </div>
   )

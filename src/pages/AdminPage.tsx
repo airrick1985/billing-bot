@@ -8,6 +8,7 @@ import {
   readExistingInvoiceNos,
 } from '../lib/google/billingSheet'
 import {
+  getEnvMasterSheetId,
   saveProjects,
   saveUsers,
   type AppUser,
@@ -24,8 +25,8 @@ export default function AdminPage() {
 
   if (role !== 'admin') {
     return (
-      <section className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center">
-        <p className="text-slate-500">此頁面僅限管理者使用。</p>
+      <section className="nb-card border-dashed p-12 text-center">
+        <p className="font-bold text-neutral-500">此頁面僅限管理者使用。</p>
       </section>
     )
   }
@@ -55,10 +56,8 @@ function FlashNote({ flash }: { flash: { kind: 'ok' | 'err'; text: string } | nu
   if (!flash) return null
   return (
     <p
-      className={`mt-3 rounded-lg p-3 text-sm ring-1 ${
-        flash.kind === 'ok'
-          ? 'bg-emerald-50 text-emerald-800 ring-emerald-200'
-          : 'bg-rose-50 text-rose-800 ring-rose-200'
+      className={`nb-frame mt-3 p-3 text-sm font-bold ${
+        flash.kind === 'ok' ? 'bg-[var(--nb-green-soft)]' : 'bg-[var(--nb-red-soft)]'
       }`}
     >
       {flash.kind === 'ok' ? '✓ ' : '⚠ '}
@@ -178,18 +177,18 @@ function ProjectsAdmin() {
   }
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section className="nb-card p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">建案管理</h2>
-          <p className="mt-1 text-sm text-slate-600">
+          <h2 className="text-lg font-extrabold">建案管理</h2>
+          <p className="mt-1 text-sm text-neutral-600">
             每個建案對應一份 Google Sheet。沒有試算表的建案可按「建立」自動產生。
           </p>
         </div>
         <button
           type="button"
           onClick={addRow}
-          className="rounded-lg border border-indigo-300 bg-white px-3 py-1.5 text-sm font-medium text-indigo-700 shadow-sm hover:bg-indigo-50"
+          className="nb-btn nb-btn-blue px-3 py-1.5 text-sm"
         >
           + 新增建案
         </button>
@@ -198,24 +197,24 @@ function ProjectsAdmin() {
       <div className="mt-4 overflow-x-auto">
         <table className="w-full min-w-[720px] text-sm">
           <thead>
-            <tr className="border-b border-slate-200 text-left text-xs text-slate-500">
-              <th className="py-2 pr-3 font-medium">建案名稱</th>
-              <th className="py-2 pr-3 font-medium">試算表</th>
-              <th className="py-2 pr-3 font-medium">Drive 資料夾 ID(選填)</th>
-              <th className="py-2 pr-3 font-medium">狀態</th>
-              <th className="py-2 pr-3 font-medium">備註</th>
-              <th className="py-2 font-medium" />
+            <tr className="border-b-2 border-black text-left text-xs">
+              <th className="py-2 pr-3 font-extrabold">建案名稱</th>
+              <th className="py-2 pr-3 font-extrabold">試算表</th>
+              <th className="py-2 pr-3 font-extrabold">Drive 資料夾 ID(選填)</th>
+              <th className="py-2 pr-3 font-extrabold">狀態</th>
+              <th className="py-2 pr-3 font-extrabold">備註</th>
+              <th className="py-2 font-extrabold" />
             </tr>
           </thead>
           <tbody>
             {drafts.map((p, i) => (
-              <tr key={i} className="border-b border-slate-100 align-top">
+              <tr key={i} className="border-b border-neutral-300 align-top">
                 <td className="py-2 pr-3">
                   <input
                     value={p.name}
                     onChange={(e) => update(i, { name: e.target.value })}
                     placeholder="例:富宇學森"
-                    className="w-32 rounded border border-slate-200 px-2 py-1 shadow-sm focus:border-indigo-400 focus:outline-none"
+                    className="nb-input w-32 px-2 py-1"
                   />
                 </td>
                 <td className="py-2 pr-3">
@@ -224,7 +223,7 @@ function ProjectsAdmin() {
                       href={spreadsheetUrl(parseSpreadsheetId(p.sheetId))}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-xs text-indigo-600 underline underline-offset-2 hover:text-indigo-800"
+                      className="nb-link text-xs"
                     >
                       開啟試算表 ↗
                     </a>
@@ -233,7 +232,7 @@ function ProjectsAdmin() {
                       type="button"
                       disabled={creatingFor !== null}
                       onClick={() => void createSheetFor(i)}
-                      className="rounded border border-emerald-300 bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-800 hover:bg-emerald-100 disabled:opacity-40"
+                      className="nb-btn nb-btn-green px-2 py-1 text-xs"
                     >
                       {creatingFor === i ? '建立中…' : '建立試算表'}
                     </button>
@@ -242,7 +241,7 @@ function ProjectsAdmin() {
                     value={p.sheetId}
                     onChange={(e) => update(i, { sheetId: e.target.value })}
                     placeholder="或貼上既有試算表網址/ID"
-                    className="mt-1 block w-56 rounded border border-slate-200 px-2 py-1 font-mono text-[11px] shadow-sm focus:border-indigo-400 focus:outline-none"
+                    className="nb-input mt-1 block w-56 px-2 py-1 font-mono text-[11px]"
                   />
                 </td>
                 <td className="py-2 pr-3">
@@ -251,7 +250,7 @@ function ProjectsAdmin() {
                       href={folderUrl(p.driveFolderId)}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-xs text-indigo-600 underline underline-offset-2 hover:text-indigo-800"
+                      className="nb-link text-xs"
                     >
                       開啟資料夾 ↗
                     </a>
@@ -260,7 +259,7 @@ function ProjectsAdmin() {
                       type="button"
                       disabled={creatingFor !== null}
                       onClick={() => void createDriveFolderFor(i)}
-                      className="rounded border border-emerald-300 bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-800 hover:bg-emerald-100 disabled:opacity-40"
+                      className="nb-btn nb-btn-green px-2 py-1 text-xs"
                     >
                       建立資料夾
                     </button>
@@ -269,17 +268,15 @@ function ProjectsAdmin() {
                     value={p.driveFolderId}
                     onChange={(e) => update(i, { driveFolderId: e.target.value })}
                     placeholder="照片歸檔用(需由系統建立)"
-                    className="mt-1 block w-40 rounded border border-slate-200 px-2 py-1 font-mono text-[11px] shadow-sm focus:border-indigo-400 focus:outline-none"
+                    className="nb-input mt-1 block w-40 px-2 py-1 font-mono text-[11px]"
                   />
                 </td>
                 <td className="py-2 pr-3">
                   <button
                     type="button"
                     onClick={() => update(i, { active: !p.active })}
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ${
-                      p.active
-                        ? 'bg-emerald-50 text-emerald-700 ring-emerald-200'
-                        : 'bg-slate-100 text-slate-500 ring-slate-200'
+                    className={`nb-badge px-2.5 py-0.5 text-xs ${
+                      p.active ? 'bg-[var(--nb-green)]' : 'bg-neutral-200 text-neutral-500'
                     }`}
                   >
                     {p.active ? '啟用' : '停用'}
@@ -289,14 +286,14 @@ function ProjectsAdmin() {
                   <input
                     value={p.note}
                     onChange={(e) => update(i, { note: e.target.value })}
-                    className="w-28 rounded border border-slate-200 px-2 py-1 shadow-sm focus:border-indigo-400 focus:outline-none"
+                    className="nb-input w-28 px-2 py-1"
                   />
                 </td>
                 <td className="py-2 text-right">
                   <button
                     type="button"
                     onClick={() => removeRow(i)}
-                    className="text-xs text-slate-400 hover:text-rose-600"
+                    className="text-xs font-medium text-neutral-500 underline decoration-2 underline-offset-2 hover:bg-[var(--nb-red-soft)] hover:text-black"
                     title="從清單移除(不會刪除試算表)"
                   >
                     移除
@@ -306,7 +303,7 @@ function ProjectsAdmin() {
             ))}
             {drafts.length === 0 && (
               <tr>
-                <td colSpan={6} className="py-6 text-center text-sm text-slate-400">
+                <td colSpan={6} className="py-6 text-center text-sm font-medium text-neutral-500">
                   尚無建案,按「+ 新增建案」開始。
                 </td>
               </tr>
@@ -320,7 +317,7 @@ function ProjectsAdmin() {
           type="button"
           disabled={saving}
           onClick={() => void save()}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-40"
+          className="nb-btn nb-btn-primary px-4 py-2 text-sm"
         >
           {saving ? '儲存中…' : '儲存變更'}
         </button>
@@ -346,8 +343,24 @@ function UsersAdmin() {
     setDrafts((ds) => ds.map((d, j) => (j === i ? { ...d, ...patch } : d)))
   }
 
-  const addRow = () => setDrafts((ds) => [...ds, { email: '', role: 'user', note: '' }])
+  const addRow = () =>
+    setDrafts((ds) => [...ds, { email: '', role: 'user', note: '', projects: [] }])
   const removeRow = (i: number) => setDrafts((ds) => ds.filter((_, j) => j !== i))
+
+  const projectNames = (master?.projects ?? []).map((p) => p.name)
+
+  const toggleProject = (i: number, name: string) => {
+    setDrafts((ds) =>
+      ds.map((d, j) => {
+        if (j !== i) return d
+        const has = d.projects.includes(name)
+        return {
+          ...d,
+          projects: has ? d.projects.filter((p) => p !== name) : [...d.projects, name],
+        }
+      }),
+    )
+  }
 
   const save = async () => {
     const cleaned = drafts
@@ -377,11 +390,11 @@ function UsersAdmin() {
   }
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section className="nb-card p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">使用者白名單</h2>
-          <p className="mt-1 text-sm text-slate-600">
+          <h2 className="text-lg font-extrabold">使用者白名單</h2>
+          <p className="mt-1 text-sm text-neutral-600">
             只有名單內的 Google 帳號能登入;admin 才能進入本頁。
             <b>另外記得把系統主檔與各建案試算表「共用」給這些帳號</b>(Google 端權限)。
           </p>
@@ -389,7 +402,7 @@ function UsersAdmin() {
         <button
           type="button"
           onClick={addRow}
-          className="rounded-lg border border-indigo-300 bg-white px-3 py-1.5 text-sm font-medium text-indigo-700 shadow-sm hover:bg-indigo-50"
+          className="nb-btn nb-btn-blue px-3 py-1.5 text-sm"
         >
           + 新增使用者
         </button>
@@ -397,34 +410,71 @@ function UsersAdmin() {
 
       <div className="mt-4 space-y-2">
         {drafts.map((u, i) => (
-          <div key={i} className="flex flex-wrap items-center gap-2">
-            <input
-              value={u.email}
-              onChange={(e) => update(i, { email: e.target.value })}
-              placeholder="user@gmail.com"
-              className="w-64 rounded border border-slate-200 px-2 py-1.5 text-sm shadow-sm focus:border-indigo-400 focus:outline-none"
-            />
-            <select
-              value={u.role}
-              onChange={(e) => update(i, { role: e.target.value as AppUser['role'] })}
-              className="rounded border border-slate-200 bg-white px-2 py-1.5 text-sm shadow-sm"
-            >
-              <option value="user">user</option>
-              <option value="admin">admin</option>
-            </select>
-            <input
-              value={u.note}
-              onChange={(e) => update(i, { note: e.target.value })}
-              placeholder="備註"
-              className="w-40 rounded border border-slate-200 px-2 py-1.5 text-sm shadow-sm focus:border-indigo-400 focus:outline-none"
-            />
-            <button
-              type="button"
-              onClick={() => removeRow(i)}
-              className="text-xs text-slate-400 hover:text-rose-600"
-            >
-              移除
-            </button>
+          <div key={i} className="nb-frame p-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                value={u.email}
+                onChange={(e) => update(i, { email: e.target.value })}
+                placeholder="user@gmail.com"
+                className="nb-input w-64 px-2 py-1.5 text-sm"
+              />
+              <select
+                value={u.role}
+                onChange={(e) => update(i, { role: e.target.value as AppUser['role'] })}
+                className="nb-select px-2 py-1.5 text-sm font-bold"
+              >
+                <option value="user">user</option>
+                <option value="admin">admin</option>
+              </select>
+              <input
+                value={u.note}
+                onChange={(e) => update(i, { note: e.target.value })}
+                placeholder="備註"
+                className="nb-input w-40 px-2 py-1.5 text-sm"
+              />
+              <button
+                type="button"
+                onClick={() => removeRow(i)}
+                className="text-xs font-medium text-neutral-500 underline decoration-2 underline-offset-2 hover:bg-[var(--nb-red-soft)] hover:text-black"
+              >
+                移除
+              </button>
+            </div>
+
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              <span className="text-[11px] font-bold">可用建案:</span>
+              {u.role === 'admin' ? (
+                <span className="nb-badge bg-[var(--nb-purple)] px-2 py-0.5 text-[11px]">
+                  全部建案(管理者)
+                </span>
+              ) : projectNames.length === 0 ? (
+                <span className="text-[11px] text-neutral-500">尚無建案</span>
+              ) : (
+                <>
+                  {projectNames.map((name) => {
+                    const selected = u.projects.includes(name)
+                    return (
+                      <button
+                        key={name}
+                        type="button"
+                        onClick={() => toggleProject(i, name)}
+                        className={`nb-frame px-2 py-0.5 text-[11px] font-medium transition ${
+                          selected
+                            ? 'bg-[var(--nb-yellow)] shadow-[2px_2px_0_0_#111]'
+                            : 'bg-white text-neutral-600 hover:bg-[var(--nb-bg)]'
+                        }`}
+                      >
+                        {selected ? '✓ ' : ''}
+                        {name}
+                      </button>
+                    )
+                  })}
+                  {u.projects.length === 0 && (
+                    <span className="text-[11px] text-neutral-500">(未勾選 = 全部建案)</span>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         ))}
       </div>
@@ -434,7 +484,7 @@ function UsersAdmin() {
           type="button"
           disabled={saving}
           onClick={() => void save()}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-40"
+          className="nb-btn nb-btn-primary px-4 py-2 text-sm"
         >
           {saving ? '儲存中…' : '儲存變更'}
         </button>
@@ -515,9 +565,9 @@ function ImportAdmin() {
   }
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-slate-900">匯入舊 Excel</h2>
-      <p className="mt-1 text-sm text-slate-600">
+    <section className="nb-card p-6">
+      <h2 className="text-lg font-extrabold">匯入舊 Excel</h2>
+      <p className="mt-1 text-sm text-neutral-600">
         把舊系統匯出的 .xlsx(總表)一次性匯入建案的 Google
         Sheet。舊 9 欄格式會自動補上聯絡人/電話空欄;發票號碼已存在的列自動跳過。
       </p>
@@ -529,7 +579,7 @@ function ImportAdmin() {
             setProjectName(e.target.value)
             setPreview(null)
           }}
-          className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm shadow-sm"
+          className="nb-select px-3 py-1.5 text-sm font-bold"
         >
           <option value="">選擇目標建案…</option>
           {projects.map((p) => (
@@ -542,7 +592,7 @@ function ImportAdmin() {
           type="button"
           disabled={!target || busy}
           onClick={() => inputRef.current?.click()}
-          className="rounded-lg border border-indigo-300 bg-white px-3 py-1.5 text-sm font-medium text-indigo-700 shadow-sm hover:bg-indigo-50 disabled:opacity-40"
+          className="nb-btn nb-btn-blue px-3 py-1.5 text-sm"
         >
           {busy ? '處理中…' : '選擇 .xlsx 檔'}
         </button>
@@ -550,13 +600,13 @@ function ImportAdmin() {
       </div>
 
       {preview && (
-        <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+        <div className="nb-frame mt-4 bg-[var(--nb-bg)] p-4 text-sm text-neutral-800">
           <p>
             <b>{preview.filename}</b>(讀取「{preview.sheetUsed}」
             {preview.wasLegacy9Col ? ',舊 9 欄格式' : ''}):共 {preview.rows.length} 列,
             將匯入 <b>{preview.newRows.length}</b> 列
             {preview.dupCount > 0 && (
-              <span className="text-amber-700">,跳過重複發票號 {preview.dupCount} 筆</span>
+              <span className="font-bold text-amber-800">,跳過重複發票號 {preview.dupCount} 筆</span>
             )}
             → 寫入「{target?.name}」
           </p>
@@ -565,14 +615,14 @@ function ImportAdmin() {
               type="button"
               disabled={busy || preview.newRows.length === 0}
               onClick={() => void doImport()}
-              className="rounded-lg bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-40"
+              className="nb-btn nb-btn-primary px-4 py-1.5 text-sm"
             >
               確認匯入
             </button>
             <button
               type="button"
               onClick={() => setPreview(null)}
-              className="rounded-lg border border-slate-300 bg-white px-4 py-1.5 text-sm text-slate-700 shadow-sm hover:bg-slate-50"
+              className="nb-btn px-4 py-1.5 text-sm"
             >
               取消
             </button>
@@ -585,30 +635,98 @@ function ImportAdmin() {
 }
 
 function SystemInfo() {
-  const { masterSheetId } = useAuth()
+  const { masterSheetId, switchMasterSheet, resetMasterToEnv } = useAuth()
+  const [input, setInput] = useState('')
+  const [busy, setBusy] = useState(false)
+  const { flash, setFlash } = useFlash()
+
+  const envId = getEnvMasterSheetId()
+  const overridden = !!envId && masterSheetId !== envId
+
+  const doSwitch = async () => {
+    setBusy(true)
+    try {
+      await switchMasterSheet(input)
+      setInput('')
+      setFlash({ kind: 'ok', text: '已切換系統主檔,建案與白名單已重新載入' })
+    } catch (err) {
+      setFlash({ kind: 'err', text: err instanceof Error ? err.message : String(err) })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const doReset = async () => {
+    setBusy(true)
+    try {
+      await resetMasterToEnv()
+      setFlash({ kind: 'ok', text: '已恢復使用環境變數設定的系統主檔' })
+    } catch (err) {
+      setFlash({ kind: 'err', text: err instanceof Error ? err.message : String(err) })
+    } finally {
+      setBusy(false)
+    }
+  }
+
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-slate-900">系統資訊</h2>
+    <section className="nb-card p-6">
+      <h2 className="text-lg font-extrabold">系統主檔</h2>
       <dl className="mt-3 space-y-2 text-sm">
         <div className="flex flex-wrap items-center gap-2">
-          <dt className="text-slate-500">系統主檔:</dt>
+          <dt className="font-bold">目前使用:</dt>
           <dd>
             <a
               href={spreadsheetUrl(masterSheetId)}
               target="_blank"
               rel="noreferrer"
-              className="font-mono text-xs text-indigo-600 underline underline-offset-2 hover:text-indigo-800"
+              className="nb-link font-mono text-xs"
             >
-              {masterSheetId}
+              {masterSheetId || '(未設定)'}
             </a>
           </dd>
+          {overridden && (
+            <span className="nb-badge bg-[var(--nb-amber)] px-2 py-0.5 text-[11px]">
+              此裝置覆寫中
+            </span>
+          )}
         </div>
       </dl>
-      <p className="mt-3 text-xs leading-5 text-slate-400">
-        ⓘ 部署到正式環境時,建議把系統主檔 ID 設成環境變數{' '}
-        <code className="rounded bg-slate-100 px-1">VITE_MASTER_SHEET_ID</code>
-        ,新裝置就不用手動設定。個資提醒:試算表含身分證字號等資料,共用時請指定帳號,勿設成「知道連結者皆可檢視」。
+
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="貼上新的系統主檔網址或 ID"
+          className="nb-input min-w-0 flex-1 px-3 py-1.5 font-mono text-xs"
+        />
+        <button
+          type="button"
+          disabled={busy || !input.trim()}
+          onClick={() => void doSwitch()}
+          className="nb-btn nb-btn-primary px-3 py-1.5 text-sm"
+        >
+          {busy ? '處理中…' : '切換主檔'}
+        </button>
+        {overridden && (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void doReset()}
+            className="nb-btn px-3 py-1.5 text-sm"
+            title={`環境變數設定:${envId}`}
+          >
+            恢復環境變數設定
+          </button>
+        )}
+      </div>
+
+      <p className="mt-3 text-xs leading-5 text-neutral-500">
+        ⓘ 切換前會先驗證:讀得到該試算表、含「建案/使用者」分頁、且你的帳號在其白名單,否則不會切換。
+        切換只影響<b>這台裝置</b>;要讓所有使用者一起切換,請同步更新部署環境變數{' '}
+        <code className="nb-frame bg-[var(--nb-bg)] px-1">VITE_MASTER_SHEET_ID</code>{' '}
+        並重新部署。個資提醒:試算表含身分證字號等資料,共用時請指定帳號,勿設成「知道連結者皆可檢視」。
       </p>
+      <FlashNote flash={flash} />
     </section>
   )
 }

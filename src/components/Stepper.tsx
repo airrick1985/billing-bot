@@ -12,47 +12,57 @@ type Props = {
 
 export default function Stepper({ currentStep, onStepClick }: Props) {
   return (
-    <ol className="flex items-center justify-between gap-2">
+    <ol className="flex items-stretch justify-between gap-3">
       {STEPS.map((s, i) => {
         const isActive = s.id === currentStep
         const isDone = s.id < currentStep
         const clickable = !!onStepClick && s.id <= currentStep
         return (
-          <li key={s.id} className="flex flex-1 items-center">
+          <li key={s.id} className="flex flex-1 items-center gap-3">
             <button
               type="button"
               disabled={!clickable}
               onClick={() => clickable && onStepClick!(s.id)}
-              className={`flex items-center gap-3 rounded-xl px-3 py-2 text-left transition ${
-                clickable ? 'cursor-pointer hover:bg-slate-100' : 'cursor-default'
-              }`}
+              className={`nb-card-sm flex flex-1 items-center gap-3 px-3 py-2 text-left ${
+                isActive
+                  ? 'bg-[var(--nb-yellow)]'
+                  : isDone
+                    ? 'bg-[var(--nb-green-soft)]'
+                    : 'bg-white'
+              } ${clickable ? 'cursor-pointer' : 'cursor-default'}`}
             >
               <span
-                className={`grid h-9 w-9 place-items-center rounded-full text-sm font-semibold ring-1 ${
+                className={`nb-frame grid h-9 w-9 shrink-0 place-items-center text-sm font-extrabold ${
                   isActive
-                    ? 'bg-indigo-600 text-white ring-indigo-600'
+                    ? 'bg-black text-white'
                     : isDone
-                      ? 'bg-indigo-100 text-indigo-700 ring-indigo-200'
-                      : 'bg-white text-slate-400 ring-slate-200'
+                      ? 'bg-[var(--nb-green)] text-black'
+                      : 'bg-white text-neutral-400'
                 }`}
               >
                 {isDone ? '✓' : s.id}
               </span>
               <span className="flex flex-col leading-tight">
                 <span
-                  className={`text-sm font-medium ${
-                    isActive ? 'text-slate-900' : isDone ? 'text-slate-700' : 'text-slate-400'
+                  className={`text-sm font-bold ${
+                    isActive || isDone ? 'text-black' : 'text-neutral-400'
                   }`}
                 >
                   {s.label}
                 </span>
-                <span className="text-xs text-slate-400">{s.hint}</span>
+                <span
+                  className={`text-xs ${
+                    isActive || isDone ? 'text-neutral-600' : 'text-neutral-400'
+                  }`}
+                >
+                  {s.hint}
+                </span>
               </span>
             </button>
             {i < STEPS.length - 1 && (
               <div
-                className={`mx-2 h-px flex-1 ${
-                  s.id < currentStep ? 'bg-indigo-300' : 'bg-slate-200'
+                className={`h-0.5 w-8 shrink-0 ${
+                  s.id < currentStep ? 'bg-black' : 'bg-neutral-300'
                 }`}
               />
             )}

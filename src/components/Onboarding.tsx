@@ -18,7 +18,7 @@ const STEPS: TourStep[] = [
         <img
           src={botPhoto}
           alt="請款機器人"
-          className="mx-auto mb-3 h-32 w-32 rounded-full shadow-md ring-2 ring-indigo-100"
+          className="nb-frame mx-auto mb-3 h-32 w-32 bg-[var(--nb-yellow)] object-cover shadow-[4px_4px_0_0_#111]"
         />
         把廠商請款的<b>發票、請款單、介紹費申請單照片</b>丟進來,AI
         幫你辨識、校對,直接寫入建案的 Google Sheet 並自動歸檔照片。
@@ -56,7 +56,7 @@ const STEPS: TourStep[] = [
         <b>建案清單、Google Sheet、使用者白名單、AI 模型與 SPEC Prompt</b>
         都集中在右上角「管理後台」,由管理者維護;一般使用者登入即用,不需任何設定。
         <br />
-        <span className="mt-2 block text-slate-500">準備好了嗎?按「開始使用」進入第一步。</span>
+        <span className="mt-2 block text-neutral-500">準備好了嗎?按「開始使用」進入第一步。</span>
       </>
     ),
   },
@@ -101,30 +101,30 @@ export default function Onboarding() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/50"
         onClick={finish}
         aria-hidden
       />
-      <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+      <div className="nb-card relative w-full max-w-md p-6 shadow-[8px_8px_0_0_#111]">
         <button
           type="button"
           onClick={finish}
-          className="absolute right-3 top-3 rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+          className="nb-btn absolute right-3 top-3 h-8 w-8 p-0 text-sm"
           aria-label="關閉教學"
         >
           ✕
         </button>
 
         <div className="flex items-start gap-3">
-          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-indigo-50 text-2xl">
+          <div className="nb-frame grid h-11 w-11 shrink-0 place-items-center bg-[var(--nb-blue-soft)] text-2xl">
             {step.emoji}
           </div>
           <div className="min-w-0 pt-1">
-            <h3 className="text-base font-semibold text-slate-900">{step.title}</h3>
+            <h3 className="text-base font-extrabold">{step.title}</h3>
           </div>
         </div>
 
-        <div className="mt-3 text-sm leading-relaxed text-slate-700">{step.body}</div>
+        <div className="mt-3 text-sm leading-relaxed text-neutral-800">{step.body}</div>
 
         <div className="mt-6 flex items-center justify-between">
           <div className="flex gap-1.5">
@@ -133,8 +133,8 @@ export default function Onboarding() {
                 key={i}
                 type="button"
                 onClick={() => setIndex(i)}
-                className={`h-1.5 rounded-full transition-all ${
-                  i === index ? 'w-6 bg-indigo-600' : 'w-1.5 bg-slate-300 hover:bg-slate-400'
+                className={`h-2.5 border-2 border-black transition-all ${
+                  i === index ? 'w-7 bg-[var(--nb-yellow)]' : 'w-2.5 bg-white hover:bg-neutral-200'
                 }`}
                 aria-label={`第 ${i + 1} 步`}
               />
@@ -145,7 +145,7 @@ export default function Onboarding() {
               <button
                 type="button"
                 onClick={() => setIndex(index - 1)}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                className="nb-btn px-3 py-1.5 text-sm"
               >
                 上一步
               </button>
@@ -154,7 +154,7 @@ export default function Onboarding() {
               <button
                 type="button"
                 onClick={() => setIndex(index + 1)}
-                className="rounded-lg bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
+                className="nb-btn nb-btn-primary px-4 py-1.5 text-sm"
               >
                 下一步
               </button>
@@ -162,7 +162,7 @@ export default function Onboarding() {
               <button
                 type="button"
                 onClick={finish}
-                className="rounded-lg bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700"
+                className="nb-btn nb-btn-green px-4 py-1.5 text-sm"
               >
                 開始使用
               </button>
@@ -173,7 +173,7 @@ export default function Onboarding() {
         <button
           type="button"
           onClick={finish}
-          className="mt-3 w-full text-center text-xs text-slate-400 hover:text-slate-600"
+          className="mt-4 w-full text-center text-xs font-medium text-neutral-500 underline decoration-2 underline-offset-2 hover:text-black"
         >
           略過教學
         </button>

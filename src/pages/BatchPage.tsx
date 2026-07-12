@@ -155,9 +155,9 @@ export default function BatchPage({ parsed, setParsed }: Props) {
 
   return (
     <section className="space-y-4">
-      <header className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-semibold text-slate-900">① 建立請款批次</h2>
-        <p className="mt-1 text-sm text-slate-600">
+      <header className="nb-card p-6">
+        <h2 className="text-xl font-extrabold">① 建立請款批次</h2>
+        <p className="mt-1 text-sm text-neutral-600">
           建案 <b>{activeProject?.name ?? '未選擇'}</b>
           {activeProject?.sheetId && (
             <>
@@ -166,7 +166,7 @@ export default function BatchPage({ parsed, setParsed }: Props) {
                 href={spreadsheetUrl(activeProject.sheetId)}
                 target="_blank"
                 rel="noreferrer"
-                className="text-indigo-600 underline underline-offset-2"
+                className="nb-link"
               >
                 總表
               </a>
@@ -177,11 +177,11 @@ export default function BatchPage({ parsed, setParsed }: Props) {
         </p>
 
         <div className="mt-4 flex flex-wrap items-center gap-3">
-          <span className="text-sm text-slate-600">請款月份</span>
+          <span className="text-sm font-bold">請款月份</span>
           <select
             value={batch.period.year ?? now.getFullYear()}
             onChange={(e) => setPeriod(Number(e.target.value), batch.period.month ?? 1)}
-            className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm shadow-sm"
+            className="nb-select px-3 py-1.5 text-sm font-bold"
           >
             {Array.from({ length: 4 }, (_, i) => now.getFullYear() - 2 + i).map((y) => (
               <option key={y} value={y}>
@@ -194,7 +194,7 @@ export default function BatchPage({ parsed, setParsed }: Props) {
             onChange={(e) =>
               setPeriod(batch.period.year ?? now.getFullYear(), Number(e.target.value))
             }
-            className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm shadow-sm"
+            className="nb-select px-3 py-1.5 text-sm font-bold"
           >
             {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
               <option key={m} value={m}>
@@ -202,26 +202,26 @@ export default function BatchPage({ parsed, setParsed }: Props) {
               </option>
             ))}
           </select>
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-neutral-500">
             寫入時會存到「{batch.rootName}」分頁與總表
           </span>
         </div>
       </header>
 
       {!activeProject?.sheetId && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+        <div className="nb-card-sm bg-[var(--nb-amber-soft)] p-3 text-sm font-medium">
           ⚠️ 此建案尚未設定 Google Sheet,無法載入歷史廠商與寫入。請管理者到「管理後台」補上。
         </div>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid items-stretch gap-4 lg:grid-cols-2">
         {/* 左:歷史廠商目錄 */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="nb-card p-5">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="text-sm font-semibold text-slate-900">
+            <h3 className="text-sm font-extrabold">
               歷史廠商
               {directory && (
-                <span className="ml-1 text-xs font-normal text-slate-400">
+                <span className="ml-1 text-xs font-medium text-neutral-500">
                   {directory.length} 筆
                 </span>
               )}
@@ -230,33 +230,33 @@ export default function BatchPage({ parsed, setParsed }: Props) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="搜尋名稱 / 統編 / 聯絡人"
-              className="w-48 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs shadow-sm focus:border-indigo-400 focus:outline-none"
+              className="nb-input w-48 px-2.5 py-1.5 text-xs"
             />
           </div>
 
           {dirError && (
-            <p className="mt-3 rounded-lg bg-rose-50 p-2.5 text-xs text-rose-700 ring-1 ring-rose-200">
+            <p className="nb-frame mt-3 bg-[var(--nb-red-soft)] p-2.5 text-xs font-medium">
               ⚠ 讀取總表失敗:{dirError}
             </p>
           )}
 
           <div className="mt-3 max-h-96 space-y-1.5 overflow-y-auto pr-1">
             {directory === null && (
-              <p className="py-6 text-center text-xs text-slate-400">載入中…</p>
+              <p className="py-6 text-center text-xs font-medium text-neutral-500">載入中…</p>
             )}
             {directory !== null && filteredDirectory.length === 0 && (
-              <p className="py-6 text-center text-xs text-slate-400">
+              <p className="py-6 text-center text-xs font-medium text-neutral-500">
                 {search ? '沒有符合的廠商' : '總表還沒有請款紀錄,用下方「新增廠商」開始'}
               </p>
             )}
             {filteredDirectory.map((v) => (
               <div
                 key={v.name}
-                className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 px-3 py-2"
+                className="nb-frame flex items-center justify-between gap-2 bg-white px-3 py-2"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-slate-800">{v.name}</p>
-                  <p className="truncate text-[11px] text-slate-400">
+                  <p className="truncate text-sm font-bold">{v.name}</p>
+                  <p className="truncate text-[11px] text-neutral-500">
                     {[
                       v.taxId && `統編 ${v.taxId}`,
                       v.contact,
@@ -273,10 +273,8 @@ export default function BatchPage({ parsed, setParsed }: Props) {
                   onClick={() =>
                     addVendor(v.name, { taxId: v.taxId, contact: v.contact, phone: v.phone })
                   }
-                  className={`shrink-0 rounded-lg px-2.5 py-1 text-xs font-medium shadow-sm ${
-                    inBatch.has(v.name)
-                      ? 'border border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100'
-                      : 'border border-indigo-300 bg-white text-indigo-700 hover:bg-indigo-50'
+                  className={`nb-btn shrink-0 px-2.5 py-1 text-xs ${
+                    inBatch.has(v.name) ? '' : 'nb-btn-blue'
                   }`}
                 >
                   {inBatch.has(v.name) ? '再加一筆' : '+ 加入'}
@@ -285,7 +283,7 @@ export default function BatchPage({ parsed, setParsed }: Props) {
             ))}
           </div>
 
-          <div className="mt-3 flex gap-2 border-t border-slate-100 pt-3">
+          <div className="mt-3 flex gap-2 border-t-2 border-black pt-3">
             <input
               value={newVendorName}
               onChange={(e) => setNewVendorName(e.target.value)}
@@ -296,7 +294,7 @@ export default function BatchPage({ parsed, setParsed }: Props) {
                 }
               }}
               placeholder="新增廠商名稱(總表沒有的)"
-              className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-sm shadow-sm focus:border-indigo-400 focus:outline-none"
+              className="nb-input min-w-0 flex-1 px-3 py-1.5 text-sm"
             />
             <button
               type="button"
@@ -305,7 +303,7 @@ export default function BatchPage({ parsed, setParsed }: Props) {
                 addVendor(newVendorName)
                 setNewVendorName('')
               }}
-              className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-40"
+              className="nb-btn nb-btn-primary px-3 py-1.5 text-sm"
             >
               新增
             </button>
@@ -313,17 +311,17 @@ export default function BatchPage({ parsed, setParsed }: Props) {
         </div>
 
         {/* 右:本批清單 */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h3 className="text-sm font-semibold text-slate-900">
+        <div className="nb-card p-5">
+          <h3 className="text-sm font-extrabold">
             本批請款廠商
-            <span className="ml-1 text-xs font-normal text-slate-400">
+            <span className="ml-1 text-xs font-medium text-neutral-500">
               {batch.vendors.length} 筆・{batch.totalFiles} 張照片
             </span>
           </h3>
 
           <div className="mt-3 space-y-3">
             {batch.vendors.length === 0 && (
-              <p className="rounded-xl border border-dashed border-slate-200 py-8 text-center text-xs text-slate-400">
+              <p className="border-2 border-dashed border-black py-8 text-center text-xs font-medium text-neutral-500">
                 從左側加入廠商後,在這裡上傳照片
               </p>
             )}
@@ -352,7 +350,7 @@ export default function BatchPage({ parsed, setParsed }: Props) {
       </div>
 
       {batch.vendors.some((v) => v.files.length === 0) && (
-        <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+        <p className="nb-card-sm bg-[var(--nb-amber-soft)] p-3 text-sm font-medium">
           ⚠️ 有廠商尚未上傳照片,進入下一步辨識時會被標記失敗。
         </p>
       )}
@@ -391,15 +389,15 @@ function EntryCard({
         setDragging(false)
         onAddFiles(Array.from(e.dataTransfer.files))
       }}
-      className={`rounded-xl border p-3 transition ${
-        dragging ? 'border-indigo-400 bg-indigo-50' : 'border-slate-200 bg-white'
+      className={`nb-frame p-3 transition ${
+        dragging ? 'bg-[var(--nb-blue-soft)] shadow-[3px_3px_0_0_#111]' : 'bg-white'
       }`}
     >
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-slate-900">{displayName}</p>
+          <p className="truncate text-sm font-bold">{displayName}</p>
           {vendor.known && (vendor.known.taxId || vendor.known.contact || vendor.known.phone) && (
-            <p className="truncate text-[11px] text-slate-400">
+            <p className="truncate text-[11px] text-neutral-500">
               {[
                 vendor.known.taxId && `統編 ${vendor.known.taxId}`,
                 vendor.known.contact,
@@ -414,14 +412,14 @@ function EntryCard({
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="rounded-lg border border-indigo-300 bg-white px-2.5 py-1 text-xs font-medium text-indigo-700 shadow-sm hover:bg-indigo-50"
+            className="nb-btn nb-btn-blue px-2.5 py-1 text-xs"
           >
             + 照片
           </button>
           <button
             type="button"
             onClick={onRemove}
-            className="text-xs text-slate-400 hover:text-rose-600"
+            className="text-xs font-medium text-neutral-500 underline decoration-2 underline-offset-2 hover:bg-[var(--nb-red-soft)] hover:text-black"
           >
             移除
           </button>
@@ -441,13 +439,13 @@ function EntryCard({
       />
 
       {vendor.files.length > 0 && (
-        <ul className="mt-2 divide-y divide-slate-100 border-t border-slate-100 text-xs">
+        <ul className="mt-2 divide-y divide-neutral-200 border-t-2 border-black text-xs">
           {vendor.files.map((f) => (
             <li key={f.relativePath} className="flex items-center gap-2 py-1.5">
               <select
                 value={f.kind}
                 onChange={(e) => onSetKind(f.relativePath, e.target.value as FileKind)}
-                className="shrink-0 rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[11px] text-slate-600"
+                className="nb-select shrink-0 px-1.5 py-0.5 text-[11px]"
               >
                 {KIND_OPTIONS.map((o) => (
                   <option key={o.value} value={o.value}>
@@ -455,12 +453,12 @@ function EntryCard({
                   </option>
                 ))}
               </select>
-              <span className="min-w-0 flex-1 truncate text-slate-700">{f.name}</span>
-              <span className="shrink-0 text-slate-400">{formatFileSize(f.size)}</span>
+              <span className="min-w-0 flex-1 truncate font-medium">{f.name}</span>
+              <span className="shrink-0 text-neutral-500">{formatFileSize(f.size)}</span>
               <button
                 type="button"
                 onClick={() => onRemoveFile(f.relativePath)}
-                className="shrink-0 text-slate-300 hover:text-rose-600"
+                className="shrink-0 font-bold text-neutral-400 hover:text-[var(--nb-red)]"
                 title="移除照片"
               >
                 ✕
@@ -470,7 +468,7 @@ function EntryCard({
         </ul>
       )}
       {vendor.files.length === 0 && (
-        <p className="mt-2 text-[11px] text-slate-400">
+        <p className="mt-2 text-[11px] text-neutral-500">
           拖曳照片到這裡,或按「+ 照片」選擇(jpg / png / webp / heic / pdf)
         </p>
       )}

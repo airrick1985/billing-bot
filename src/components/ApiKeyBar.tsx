@@ -23,18 +23,20 @@ export default function ApiKeyBar() {
 
   return (
     <details
-      className={`rounded-xl border px-4 py-2.5 text-sm shadow-sm ${
-        missing ? 'border-amber-300 bg-amber-50' : 'border-slate-200 bg-white'
+      className={`nb-card-sm px-4 py-2.5 text-sm ${
+        missing ? 'bg-[var(--nb-amber-soft)]' : 'bg-white'
       }`}
       open={missing || undefined}
     >
-      <summary className="cursor-pointer select-none text-slate-700">
+      <summary className="cursor-pointer select-none font-bold">
         {missing ? '⚠️ ' : '🔑 '}
         個人 {meta.displayName} API Key
         {missing ? (
-          <span className="ml-1 font-medium text-amber-700">尚未設定,無法辨識</span>
+          <span className="ml-1 font-bold text-amber-800">尚未設定,無法辨識</span>
         ) : (
-          <span className="ml-1 text-xs text-slate-400">已設定(只存這台裝置)</span>
+          <span className="ml-1 text-xs font-medium text-neutral-500">
+            已設定(只存這台裝置)
+          </span>
         )}
       </summary>
       <div className="mt-2 flex items-center gap-2 pb-1">
@@ -45,12 +47,12 @@ export default function ApiKeyBar() {
           placeholder={meta.keyPlaceholder}
           autoComplete="off"
           spellCheck={false}
-          className="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-mono text-xs text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-200"
+          className="nb-input min-w-0 flex-1 px-3 py-1.5 font-mono text-xs"
         />
         <button
           type="button"
           onClick={() => setShow((v) => !v)}
-          className="shrink-0 text-xs font-medium text-slate-500 hover:text-slate-800"
+          className="nb-btn shrink-0 px-2.5 py-1 text-xs"
         >
           {show ? '隱藏' : '顯示'}
         </button>
@@ -58,7 +60,7 @@ export default function ApiKeyBar() {
           href={meta.getKeyUrl}
           target="_blank"
           rel="noreferrer"
-          className="shrink-0 text-xs text-indigo-600 hover:underline"
+          className="nb-link shrink-0 text-xs"
         >
           取得 Key ↗
         </a>

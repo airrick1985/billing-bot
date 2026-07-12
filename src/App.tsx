@@ -44,19 +44,21 @@ function AppShell() {
   const canProceed = readyVendors > 0
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen">
       <Onboarding key={tourKey} />
-      <header className="border-b border-slate-200 bg-white">
+      <header className="border-b-2 border-black bg-white">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-6 py-4">
           <div className="flex items-center gap-3">
             <img
               src={botPhoto}
               alt="請款機器人"
-              className="h-10 w-10 rounded-full shadow-sm ring-1 ring-slate-200"
+              className="nb-frame h-10 w-10 bg-[var(--nb-yellow)] object-cover"
             />
             <div>
-              <h1 className="text-lg font-semibold text-slate-900">廠商請款助理</h1>
-              <p className="text-xs text-slate-500">AI 辨識・自動彙整到 Google Sheet</p>
+              <h1 className="text-lg font-extrabold tracking-tight">廠商請款助理</h1>
+              <p className="text-xs font-medium text-neutral-500">
+                AI 辨識・自動彙整到 Google Sheet
+              </p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -65,10 +67,8 @@ function AppShell() {
               <button
                 type="button"
                 onClick={() => setView((v) => (v === 'admin' ? 'wizard' : 'admin'))}
-                className={`rounded-lg px-3 py-1.5 text-sm font-medium shadow-sm ${
-                  view === 'admin'
-                    ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                    : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
+                className={`nb-btn px-3 py-1.5 text-sm ${
+                  view === 'admin' ? 'nb-btn-dark' : 'nb-btn-pink'
                 }`}
               >
                 {view === 'admin' ? '← 回請款流程' : '管理後台'}
@@ -77,31 +77,31 @@ function AppShell() {
             <button
               type="button"
               onClick={replayTour}
-              className="text-sm text-slate-500 hover:text-slate-900"
+              className="nb-link text-sm"
             >
               教學
             </button>
-            <div className="flex items-center gap-2 border-l border-slate-200 pl-3">
+            <div className="flex items-center gap-2 border-l-2 border-black pl-3">
               {user?.picture ? (
                 <img
                   src={user.picture}
                   alt=""
                   referrerPolicy="no-referrer"
-                  className="h-7 w-7 rounded-full"
+                  className="nb-frame h-7 w-7"
                 />
               ) : (
-                <div className="grid h-7 w-7 place-items-center rounded-full bg-slate-200 text-xs text-slate-600">
+                <div className="nb-frame grid h-7 w-7 place-items-center bg-[var(--nb-blue)] text-xs font-bold">
                   {user?.name?.slice(0, 1) ?? '?'}
                 </div>
               )}
               <div className="hidden sm:block">
-                <p className="max-w-32 truncate text-xs font-medium text-slate-700">
+                <p className="max-w-32 truncate text-xs font-bold">
                   {user?.name}
                 </p>
                 <button
                   type="button"
                   onClick={signOut}
-                  className="text-[11px] text-slate-400 hover:text-slate-700"
+                  className="text-[11px] font-medium text-neutral-500 underline decoration-2 underline-offset-2 hover:bg-[var(--nb-yellow)] hover:text-black"
                 >
                   登出
                 </button>
@@ -131,7 +131,7 @@ function AppShell() {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
+                  className="nb-btn px-4 py-2 text-sm"
                 >
                   ← 回上一步調整批次
                 </button>
@@ -148,7 +148,7 @@ function AppShell() {
                       ? `${readyVendors} 筆廠商已備妥照片`
                       : '請先加入廠商並上傳照片'
                   }
-                  className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="nb-btn nb-btn-primary px-5 py-2.5 text-sm"
                 >
                   下一步:辨識與校對({readyVendors} 筆)→
                 </button>

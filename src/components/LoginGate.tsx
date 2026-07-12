@@ -7,16 +7,18 @@ export default function LoginGate() {
   const { status } = useAuth()
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="nb-card w-full max-w-md p-8">
         <div className="flex flex-col items-center text-center">
           <img
             src={botPhoto}
             alt="請款機器人"
-            className="h-28 w-28 rounded-full shadow-md ring-2 ring-indigo-100"
+            className="nb-frame h-28 w-28 bg-[var(--nb-yellow)] object-cover shadow-[4px_4px_0_0_#111]"
           />
-          <h1 className="mt-3 text-lg font-semibold text-slate-900">廠商請款助理</h1>
-          <p className="text-xs text-slate-500">AI 辨識・自動彙整到 Google Sheet</p>
+          <h1 className="mt-4 text-xl font-extrabold tracking-tight">廠商請款助理</h1>
+          <p className="text-xs font-medium text-neutral-500">
+            AI 辨識・自動彙整到 Google Sheet
+          </p>
         </div>
 
         <div className="mt-6">
@@ -35,7 +37,7 @@ function ErrorNote() {
   const { error } = useAuth()
   if (!error) return null
   return (
-    <p className="mt-3 rounded-lg bg-rose-50 p-3 text-sm text-rose-800 ring-1 ring-rose-200">
+    <p className="nb-frame mt-3 bg-[var(--nb-red-soft)] p-3 text-sm font-medium">
       ⚠ {error}
     </p>
   )
@@ -47,10 +49,10 @@ function ClientIdSetup() {
 
   return (
     <div>
-      <h2 className="text-base font-semibold text-slate-900">初次設定:Google Client ID</h2>
-      <p className="mt-2 text-sm leading-6 text-slate-600">
+      <h2 className="text-base font-extrabold">初次設定:Google Client ID</h2>
+      <p className="mt-2 text-sm leading-6 text-neutral-700">
         本系統透過你的 Google 帳號存取 Google Sheet。請依照專案內的{' '}
-        <code className="rounded bg-slate-100 px-1 text-xs">SETUP.md</code>{' '}
+        <code className="nb-frame bg-[var(--nb-bg)] px-1 text-xs">SETUP.md</code>{' '}
         建立 Google Cloud OAuth Client ID 後,貼在下方。
       </p>
       <input
@@ -58,13 +60,13 @@ function ClientIdSetup() {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="xxxxxxxx.apps.googleusercontent.com"
-        className="mt-4 w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-xs shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-200"
+        className="nb-input mt-4 w-full px-3 py-2 font-mono text-xs"
       />
       <button
         type="button"
         disabled={!value.trim().endsWith('.apps.googleusercontent.com')}
         onClick={() => setupClientId(value)}
-        className="mt-3 w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-40"
+        className="nb-btn nb-btn-primary mt-4 w-full px-4 py-2 text-sm"
       >
         儲存並繼續
       </button>
@@ -77,14 +79,14 @@ function SignInPanel() {
   const { signIn } = useAuth()
   return (
     <div>
-      <h2 className="text-base font-semibold text-slate-900">登入</h2>
-      <p className="mt-2 text-sm text-slate-600">
+      <h2 className="text-base font-extrabold">登入</h2>
+      <p className="mt-2 text-sm text-neutral-700">
         使用公司 Google 帳號登入。資料直接存取你的 Google Sheet,不經過第三方伺服器。
       </p>
       <button
         type="button"
         onClick={() => void signIn()}
-        className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+        className="nb-btn mt-4 w-full px-4 py-2.5 text-sm"
       >
         <GoogleIcon />
         使用 Google 帳號登入
@@ -97,8 +99,8 @@ function SignInPanel() {
 function BusyPanel() {
   return (
     <div className="py-6 text-center">
-      <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
-      <p className="mt-3 text-sm text-slate-500">處理中…</p>
+      <div className="nb-frame mx-auto h-8 w-8 animate-spin border-t-[var(--nb-yellow)]" />
+      <p className="mt-3 text-sm font-bold">處理中…</p>
     </div>
   )
 }
@@ -109,8 +111,8 @@ function MasterSetup() {
 
   return (
     <div>
-      <h2 className="text-base font-semibold text-slate-900">設定系統主檔</h2>
-      <p className="mt-2 text-sm leading-6 text-slate-600">
+      <h2 className="text-base font-extrabold">設定系統主檔</h2>
+      <p className="mt-2 text-sm leading-6 text-neutral-700">
         已登入 <b>{user?.email}</b>。系統主檔是一份 Google
         Sheet,存放建案清單與使用者白名單。這台裝置尚未設定,請選擇:
       </p>
@@ -118,26 +120,26 @@ function MasterSetup() {
       <button
         type="button"
         onClick={() => void createNewMaster()}
-        className="mt-4 w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
+        className="nb-btn nb-btn-primary mt-4 w-full px-4 py-2 text-sm"
       >
         建立新的系統主檔(第一次使用)
       </button>
 
-      <div className="mt-4 border-t border-slate-100 pt-4">
-        <p className="text-xs text-slate-500">或貼上既有系統主檔的網址 / ID:</p>
+      <div className="mt-4 border-t-2 border-black pt-4">
+        <p className="text-xs font-bold">或貼上既有系統主檔的網址 / ID:</p>
         <div className="mt-2 flex gap-2">
           <input
             type="text"
             value={existing}
             onChange={(e) => setExisting(e.target.value)}
             placeholder="https://docs.google.com/spreadsheets/d/…"
-            className="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 font-mono text-xs shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-200"
+            className="nb-input min-w-0 flex-1 px-3 py-2 font-mono text-xs"
           />
           <button
             type="button"
             disabled={!existing.trim()}
             onClick={() => void linkExistingMaster(existing)}
-            className="rounded-lg border border-indigo-300 bg-white px-3 py-2 text-sm font-medium text-indigo-700 shadow-sm hover:bg-indigo-50 disabled:opacity-40"
+            className="nb-btn nb-btn-blue px-3 py-2 text-sm"
           >
             連結
           </button>
@@ -147,7 +149,7 @@ function MasterSetup() {
       <button
         type="button"
         onClick={signOut}
-        className="mt-4 text-xs text-slate-400 hover:text-slate-600"
+        className="nb-link mt-4 text-xs"
       >
         改用其他帳號登入
       </button>
@@ -160,8 +162,8 @@ function UnauthorizedPanel() {
   const { user, signOut, refreshMaster } = useAuth()
   return (
     <div>
-      <h2 className="text-base font-semibold text-slate-900">尚未開通權限</h2>
-      <p className="mt-2 text-sm leading-6 text-slate-600">
+      <h2 className="text-base font-extrabold">尚未開通權限</h2>
+      <p className="mt-2 text-sm leading-6 text-neutral-700">
         <b>{user?.email}</b> 不在系統白名單中。請聯絡管理者將此 email
         加入「系統主檔 → 使用者」分頁後,再按重新檢查。
       </p>
@@ -169,14 +171,14 @@ function UnauthorizedPanel() {
         <button
           type="button"
           onClick={() => void refreshMaster()}
-          className="flex-1 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
+          className="nb-btn nb-btn-primary flex-1 px-4 py-2 text-sm"
         >
           重新檢查
         </button>
         <button
           type="button"
           onClick={signOut}
-          className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+          className="nb-btn px-4 py-2 text-sm"
         >
           登出
         </button>

@@ -57,11 +57,11 @@ export default function GlobalOcrCard({
   }
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section className="nb-card p-6">
       <div className="flex items-baseline justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">全域 OCR 設定</h2>
-          <p className="mt-1 text-sm text-slate-600">
+          <h2 className="text-lg font-extrabold">全域 OCR 設定</h2>
+          <p className="mt-1 text-sm text-neutral-600">
             AI Provider、模型與 SPEC Prompt,全公司共用,儲存後所有使用者立即生效。
           </p>
         </div>
@@ -73,10 +73,8 @@ export default function GlobalOcrCard({
             key={id}
             type="button"
             onClick={() => switchProvider(id)}
-            className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
-              id === provider
-                ? 'bg-indigo-600 text-white shadow-sm'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            className={`nb-btn px-3 py-1.5 text-sm ${
+              id === provider ? 'nb-btn-dark' : ''
             }`}
           >
             {PROVIDERS[id].short}
@@ -96,7 +94,7 @@ export default function GlobalOcrCard({
 
       <div className="mt-5">
         <div className="flex items-baseline justify-between">
-          <label htmlFor="spec-prompt" className="text-sm font-medium text-slate-800">
+          <label htmlFor="spec-prompt" className="text-sm font-bold">
             SPEC Prompt
           </label>
           <button
@@ -106,7 +104,7 @@ export default function GlobalOcrCard({
                 setSpecPrompt(DEFAULT_SPEC_PROMPT)
               }
             }}
-            className="text-xs text-slate-500 hover:text-slate-800 hover:underline"
+            className="nb-link text-xs"
           >
             重設為預設
           </button>
@@ -116,28 +114,30 @@ export default function GlobalOcrCard({
           value={specPrompt}
           onChange={(e) => setSpecPrompt(e.target.value)}
           rows={14}
-          className="mt-2 block w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 font-mono text-xs leading-relaxed text-slate-900 shadow-inner focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-200"
+          className="nb-textarea mt-2 block w-full bg-[var(--nb-bg)] px-3 py-2 font-mono text-xs leading-relaxed focus:bg-white"
           spellCheck={false}
         />
       </div>
 
       <div className="mt-4 flex items-center justify-end gap-3">
-        {dirty && <span className="text-xs text-amber-600">尚未儲存</span>}
+        {dirty && (
+          <span className="nb-badge bg-[var(--nb-amber)] px-2 py-0.5 text-xs">尚未儲存</span>
+        )}
         <button
           type="button"
           disabled={saving}
           onClick={() => void save()}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-40"
+          className="nb-btn nb-btn-primary px-4 py-2 text-sm"
         >
           {saving ? '儲存中…' : '儲存全域設定'}
         </button>
       </div>
       {flash && (
         <p
-          className={`mt-3 rounded-lg p-3 text-sm ring-1 ${
+          className={`nb-frame mt-3 p-3 text-sm font-bold ${
             flash.kind === 'ok'
-              ? 'bg-emerald-50 text-emerald-800 ring-emerald-200'
-              : 'bg-rose-50 text-rose-800 ring-rose-200'
+              ? 'bg-[var(--nb-green-soft)]'
+              : 'bg-[var(--nb-red-soft)]'
           }`}
         >
           {flash.kind === 'ok' ? '✓ ' : '⚠ '}
@@ -192,7 +192,7 @@ function ModelField({
   return (
     <div>
       <div className="flex items-baseline justify-between">
-        <label htmlFor={`model-${providerId}`} className="text-sm font-medium text-slate-800">
+        <label htmlFor={`model-${providerId}`} className="text-sm font-bold">
           模型
         </label>
         <button
@@ -200,7 +200,7 @@ function ModelField({
           onClick={loadLatest}
           disabled={loading || !apiKey.trim()}
           title={!apiKey.trim() ? '需要個人 API Key 才能抓模型清單(也可直接輸入模型 ID)' : undefined}
-          className="text-xs text-indigo-600 hover:underline disabled:cursor-not-allowed disabled:text-slate-400 disabled:no-underline"
+          className="nb-link text-xs disabled:cursor-not-allowed disabled:text-neutral-400 disabled:no-underline disabled:hover:bg-transparent"
         >
           {loading ? '載入中…' : '🔄 載入最新'}
         </button>
@@ -212,7 +212,7 @@ function ModelField({
         list={datalistId}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 font-mono text-sm text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+        className="nb-input mt-2 block w-full px-3 py-2 font-mono text-sm"
         placeholder={meta.defaultModel}
       />
       <datalist id={datalistId}>
@@ -222,7 +222,7 @@ function ModelField({
       </datalist>
 
       <div className="mt-3">
-        <div className="text-xs font-medium text-slate-500">推薦預設</div>
+        <div className="text-xs font-bold text-neutral-600">推薦預設</div>
         <div className="mt-1.5 flex flex-wrap gap-2">
           {meta.defaultModels.map((m) => {
             const selected = m.value === value
@@ -231,10 +231,10 @@ function ModelField({
                 key={m.value}
                 type="button"
                 onClick={() => onChange(m.value)}
-                className={`rounded-full border px-2.5 py-1 text-xs transition ${
+                className={`nb-frame px-2.5 py-1 text-xs font-medium transition ${
                   selected
-                    ? 'border-indigo-300 bg-indigo-100 text-indigo-700'
-                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                    ? 'bg-[var(--nb-yellow)] shadow-[2px_2px_0_0_#111]'
+                    : 'bg-white hover:bg-[var(--nb-bg)]'
                 }`}
                 title={m.hint}
               >
@@ -246,14 +246,14 @@ function ModelField({
       </div>
 
       {cache.models.length > 0 && (
-        <details className="mt-3 rounded-lg border border-slate-200 bg-slate-50">
-          <summary className="cursor-pointer select-none px-3 py-2 text-xs text-slate-700 marker:text-slate-400">
+        <details className="nb-frame mt-3 bg-[var(--nb-bg)]">
+          <summary className="cursor-pointer select-none px-3 py-2 text-xs font-bold">
             已載入 <b>{cache.models.length}</b> 個模型
-            <span className="ml-2 text-slate-400">
+            <span className="ml-2 font-medium text-neutral-500">
               ({fresh ? '24 小時內' : '已過期,建議重新載入'})
             </span>
           </summary>
-          <div className="max-h-56 overflow-y-auto border-t border-slate-200 px-3 py-2">
+          <div className="max-h-56 overflow-y-auto border-t-2 border-black bg-white px-3 py-2">
             <div className="flex flex-wrap gap-1">
               {cache.models.map((m) => {
                 const selected = m === value
@@ -262,10 +262,10 @@ function ModelField({
                     key={m}
                     type="button"
                     onClick={() => onChange(m)}
-                    className={`rounded border px-2 py-0.5 font-mono text-[11px] transition ${
+                    className={`nb-frame px-2 py-0.5 font-mono text-[11px] transition ${
                       selected
-                        ? 'border-indigo-300 bg-indigo-100 text-indigo-700'
-                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-100'
+                        ? 'bg-[var(--nb-yellow)]'
+                        : 'bg-white hover:bg-[var(--nb-bg)]'
                     }`}
                   >
                     {m}
@@ -278,7 +278,7 @@ function ModelField({
       )}
 
       {error && (
-        <p className="mt-2 rounded-md border border-rose-200 bg-rose-50 px-2 py-1.5 text-xs text-rose-700">
+        <p className="nb-frame mt-2 bg-[var(--nb-red-soft)] px-2 py-1.5 text-xs font-medium">
           ⚠️ {error}
         </p>
       )}
